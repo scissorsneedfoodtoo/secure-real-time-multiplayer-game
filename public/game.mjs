@@ -3,22 +3,23 @@ import Coin from './Coin.mjs';
 import controls from './controls.mjs';
 
 const socket = io();
-// window.socket = io(); // equivalent to io.connect()
 const canvas = document.getElementById('game-window');
 const context = canvas.getContext('2d');
 
 let currPlayers = [];
-let items = [];
+let item;
 let endGame;
 
-socket.on('init', ({ id, players, coins }) => {
+socket.on('init', ({ id, players, coin }) => {
   console.log('connected', id);
 
   // Create our player when we log on
   const player = new Player({ id, main: true });
   controls(player, socket);
 
+  // Send our player back to the server
   socket.emit('new-player', player);
+
   // Add new player when someone logs on
   socket.on('new-player', obj => currPlayers.push(new Player(obj)));
 
@@ -30,17 +31,18 @@ socket.on('init', ({ id, players, coins }) => {
     currPlayers.find(obj => obj.id === id).stop(dir)
   );
 
-  // Handle other players collecting coins
-  socket.on('destroy-item', id => { 
+  // // Handle other players collecting coins (not necessary with single random coin)
+  // socket.on('destroy-item', id => { 
     // console.log('client destroyed 2', id)
-    items = items.filter(item => item.id !== id) 
+    // items = items.filter(item => item.id !== id);
     // socket.emit('new-coin', 'gimme');
-  });
+    // item = {};
+    // item = null;
+  // });
 
   // Handle new coin gen
   socket.on('new-coin', newCoin => {
-    console.log(newCoin);
-    items = newCoin.map(coin => new Coin(coin));
+    item = new Coin(newCoin);
   });
 
   // Handle player disconnection
@@ -51,12 +53,12 @@ socket.on('init', ({ id, players, coins }) => {
   // Handle endGame state
   socket.on('end-game', result => endGame = result);
 
-  socket.on('update-player', obj => (player.xp = obj.xp));
+  socket.on('update-player', obj => (player.score = obj.score));
 
-  // Populate players list when logging in
+  // Populate players list and create
+  // current coin when logging in
   currPlayers = players.map(val => new Player(val)).concat(player);
-  // console.log(currPlayers, players);
-  items = coins.map(val => new Coin(val));
+  item = new Coin(coin);
 
   draw();
 });
@@ -64,25 +66,19 @@ socket.on('init', ({ id, players, coins }) => {
 const draw = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  currPlayers.forEach(player => player.draw(context, items));
+  currPlayers.forEach(player => player.draw(context, item));
 
   // Remove destroyed coin
-  items.forEach(item => {
     item.draw(context);
     if (item.destroyed) {
-      // console.log('client destroyed 1', item);
       socket.emit('destroy-item', { playerId: item.destroyed, coinId: item.id });
-      // socket.emit('new-coin', 'gimme');
     }
-  });
 
   if (endGame) {
     context.fillStyle = endGame === 'lose' ? 'red' : 'green';
     context.font = '100px ariel';
     context.fillText(`You ${endGame}!`, 100, 100);
   }
-
-  items = items.filter(item => !item.destroyed);
 
   if (!endGame) requestAnimationFrame(draw);
 }

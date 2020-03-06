@@ -58,16 +58,12 @@ const io = socket(server);
 import Coin from './public/Coin.mjs';
 
 let currPlayers = []
-let coins = [];
-
-for (let i = 0; i < 1; i++) {
-  coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: i }));
-}
+let coin = new Coin({ x: Math.random() * 625, y: Math.random() * 465 });
 
 io.sockets.on('connection', socket => {
   console.log(`New connection ${socket.id}`);
 
-  socket.emit('init', { id: socket.id, players: currPlayers, coins });
+  socket.emit('init', { id: socket.id, players: currPlayers, coin });
 
   socket.on('new-player', obj => {
     obj.id = socket.id;
@@ -89,36 +85,24 @@ io.sockets.on('connection', socket => {
     stoppingPlayer.y = obj.y;
   });
   
-  socket.on('destroy-item', ({ playerId, coinId }) => {
-    console.log(playerId);
-    if (coins.find(coin => coin.id === coinId)) {
-      const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
-      const sock = io.sockets.connected[scoringPlayer.id];
+  socket.on('destroy-item', ({ playerId }) => {
+    const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
+    const sock = io.sockets.connected[scoringPlayer.id];
 
-      coins = coins.filter(coin => coin.id !== coinId);
-      scoringPlayer.xp += 1;
-      socket.broadcast.emit('destroy-item', coinId);
-      // console.log(scoringPlayer);
-      coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 }));
-      // console.log(coins);
-      // Send new coin to all players
-      io.emit('new-coin', coins);
+    scoringPlayer.score += 1;
 
-      sock.emit('update-player', scoringPlayer);
-      // communicate win state and broadcast losses
-      if (scoringPlayer.xp === 10) {
-        sock.emit('end-game', 'win');
-        sock.broadcast.emit('end-game', 'lose');
-      }
+    sock.emit('update-player', scoringPlayer);
+    // Communicate win state and broadcast losses
+    // if (scoringPlayer.score === 10) {
+    if (scoringPlayer.score === 2) {
+      sock.emit('end-game', 'win');
+      sock.broadcast.emit('end-game', 'lose');
+    } else {
+      // Generate new coin and send it to all players
+      coin = new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 })
+      io.emit('new-coin', coin);
     }
   });
-
-  socket.on('new-coin', str => {
-    // console.log(str);
-    coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 }));
-    // console.log(coins);
-    socket.broadcast.emit('new-coin', coins);
-  })
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('remove-player', socket.id);
