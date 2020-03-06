@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Secure Real-Time Multiplayer Game</title>
+    <meta
+      name="description"
+      content="An example for the fCC QA Secure Real-Time Multiplayer Game project"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../public/style.css" type="text/css" />
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <!-- <script src="http://localhost:3000/socket.io/socket.io.js"></script> -->
+  </head>
+  <body>
+    <header>
+      <h1>
+        Information Security - Secure Real-Time Multiplayer Game
+      </h1>
+    </header>
+    <div id="userstories">
+      <h3>User Stories</h3>
+      <ol>
+        <li>
+          I can enter a simple sentence into the text area and select whether to translate to British or American English from the dropdown menu.
+        </li>
+        <li>
+          When the "Translate" button is pressed:
+        </li>
+        <li>
+          I can press the "Clear Input" button to remove all text from the text area and the <code>translated-sentence</code> <code>div</code>.
+        </li>
+        <li>
+          All 12 unit tests are complete and passing. See <code>/tests/1_unit-tests.js</code> for examples of sentences you can use to write these tests.
+        </li>
+        <li>
+          All 4 functional tests are complete and passing.
+        </li>
+      </ol>
+    </div>
+    <hr style="margin: 25px" />
+    <div class="container">
+      <canvas 
+        ref="game"
+        id="game-window" 
+        width="640" 
+        height="480"
+      >
+      </canvas>
+    </div>
+  </body>
+  <!-- <script src="../public/sketch.js"></script> -->
+  <!-- <script src="../public/player.js"></script> -->
+  <script src="../public/game.mjs" type="module"></script>
+</html>
