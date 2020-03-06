@@ -60,7 +60,7 @@ import Coin from './public/Coin.mjs';
 let currPlayers = []
 let coins = [];
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 1; i++) {
   coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: i }));
 }
 
@@ -90,6 +90,7 @@ io.sockets.on('connection', socket => {
   });
   
   socket.on('destroy-item', ({ playerId, coinId }) => {
+    console.log(playerId);
     if (coins.find(coin => coin.id === coinId)) {
       const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
       const sock = io.sockets.connected[scoringPlayer.id];
@@ -98,6 +99,10 @@ io.sockets.on('connection', socket => {
       scoringPlayer.xp += 1;
       socket.broadcast.emit('destroy-item', coinId);
       // console.log(scoringPlayer);
+      coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 }));
+      // console.log(coins);
+      // Send new coin to all players
+      io.emit('new-coin', coins);
 
       sock.emit('update-player', scoringPlayer);
       // communicate win state and broadcast losses
@@ -107,6 +112,13 @@ io.sockets.on('connection', socket => {
       }
     }
   });
+
+  socket.on('new-coin', str => {
+    // console.log(str);
+    coins.push(new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 }));
+    // console.log(coins);
+    socket.broadcast.emit('new-coin', coins);
+  })
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('remove-player', socket.id);

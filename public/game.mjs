@@ -30,8 +30,18 @@ socket.on('init', ({ id, players, coins }) => {
     currPlayers.find(obj => obj.id === id).stop(dir)
   );
 
-  // Handle collecting coins
-  socket.on('destroy-item', id => { items = items.filter(item => item.id !== id) });
+  // Handle other players collecting coins
+  socket.on('destroy-item', id => { 
+    // console.log('client destroyed 2', id)
+    items = items.filter(item => item.id !== id) 
+    // socket.emit('new-coin', 'gimme');
+  });
+
+  // Handle new coin gen
+  socket.on('new-coin', newCoin => {
+    console.log(newCoin);
+    items = newCoin.map(coin => new Coin(coin));
+  });
 
   // Handle player disconnection
   socket.on('remove-player', id => {
@@ -52,25 +62,27 @@ socket.on('init', ({ id, players, coins }) => {
 });
 
 const draw = () => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
-    currPlayers.forEach(player => player.draw(context, items));
+  currPlayers.forEach(player => player.draw(context, items));
 
-    // Remove destroyed coin
-    items.forEach(item => {
-      item.draw(context);
-      if (item.destroyed) {
-        socket.emit('destroy-item', { playerId: item.destroyed, coinId: item.id });
-      }
-    });
-
-    if (endGame) {
-      context.fillStyle = endGame === 'lose' ? 'red' : 'green';
-      context.font = '100px ariel';
-      context.fillText(`You ${endGame}!`, 100, 100);
+  // Remove destroyed coin
+  items.forEach(item => {
+    item.draw(context);
+    if (item.destroyed) {
+      // console.log('client destroyed 1', item);
+      socket.emit('destroy-item', { playerId: item.destroyed, coinId: item.id });
+      // socket.emit('new-coin', 'gimme');
     }
+  });
 
-    items = items.filter(item => !item.destroyed);
-
-    if (!endGame) requestAnimationFrame(draw);
+  if (endGame) {
+    context.fillStyle = endGame === 'lose' ? 'red' : 'green';
+    context.font = '100px ariel';
+    context.fillText(`You ${endGame}!`, 100, 100);
   }
+
+  items = items.filter(item => !item.destroyed);
+
+  if (!endGame) requestAnimationFrame(draw);
+}
