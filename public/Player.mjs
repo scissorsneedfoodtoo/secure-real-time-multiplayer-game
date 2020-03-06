@@ -4,15 +4,15 @@ class Player {
     this.y = y;
     this.w = w;
     this.h = h;
-    this.speed = 5;
-    this.xp = 0;
+    this.speed = 4;
+    this.score = 0;
     this.id = id;
     this.color = color;
     this.movementDirection = {};
     this.isMain = main;
   }
 
-  draw(context, coins) {
+  draw(context, coin) {
     if (this.movementDirection.right) this.x += this.speed;
     if (this.movementDirection.left) this.x -= this.speed;
     if (this.movementDirection.up) this.y -= this.speed;
@@ -24,15 +24,13 @@ class Player {
 
     if (this.isMain) {
       context.font = '20px ariel';
-      context.fillText('Score: ' + this.xp, 560, 30);
+      context.fillText('Score: ' + this.score, 560, 30);
     }
 
-    coins.forEach(coin => {
-      if (this.collide(coin)) {
-        this.xp += coin.value;
-        coin.destroyed = this.id;
-      }
-    });
+    if (this.collide(coin)) {
+      this.score += coin.value;
+      coin.destroyed = this.id;
+    }
   }
 
   move(dir) {
