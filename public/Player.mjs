@@ -1,10 +1,12 @@
+import { canvasCalcs } from './canvas-data.mjs';
+
 class Player {
-  constructor({ id, x = 10, y = 10, w = 30, h = 30, color = "white", main }) {
+  constructor({ id, x = 10, y = 10, w = 25, h = 25, color = "white", main }) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.speed = 4;
+    this.speed = 5;
     this.score = 0;
     this.id = id;
     this.color = color;
@@ -13,18 +15,18 @@ class Player {
   }
 
   draw(context, coin) {
-    if (this.movementDirection.right) this.x += this.speed;
-    if (this.movementDirection.left) this.x -= this.speed;
-    if (this.movementDirection.up) this.y -= this.speed;
-    if (this.movementDirection.down) this.y += this.speed;
+    if (this.movementDirection.right) this.x + this.speed <= canvasCalcs.playFieldMaxX ? this.x += this.speed : this.x += 0;
+    if (this.movementDirection.left) this.x - this.speed >= canvasCalcs.playFieldMinX ? this.x -= this.speed : this.x -= 0;
+    if (this.movementDirection.up) this.y - this.speed >= canvasCalcs.playFieldMinY ? this.y -= this.speed : this.y -= 0;
+    if (this.movementDirection.down) this.y + this.speed <= canvasCalcs.playFieldMaxY ? this.y += this.speed : this.y += 0;
 
     context.beginPath();
     context.fillStyle = this.color;
     context.fillRect(this.x, this.y, this.w, this.h);
 
     if (this.isMain) {
-      context.font = '20px ariel';
-      context.fillText('Score: ' + this.score, 560, 30);
+      context.font = `15px 'Press Start 2P'`;
+      context.fillText('Score: ' + this.score, 495, 32.5);
     }
 
     if (this.collide(coin)) {

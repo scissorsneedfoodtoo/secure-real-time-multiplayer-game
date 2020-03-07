@@ -14,9 +14,8 @@
 
 canvas {
   display: block;
-  /* border: 1px solid black; */
-  /* background-color: rgb(220, 220, 220); */
   background-color: #220;
+  margin: auto;
 }
 
 #user-stories,
