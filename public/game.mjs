@@ -1,6 +1,7 @@
 import Player from './Player.mjs';
 import Coin from './Coin.mjs';
 import controls from './controls.mjs';
+import { generateStartPos, canvasCalcs } from './canvas-data.mjs';
 
 const socket = io();
 const canvas = document.getElementById('game-window');
@@ -14,7 +15,13 @@ socket.on('init', ({ id, players, coin }) => {
   console.log('connected', id);
 
   // Create our player when we log on
-  const player = new Player({ id, main: true });
+  const player = new Player({ 
+    x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
+    y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
+    id, 
+    main: true 
+  });
+
   controls(player, socket);
 
   // Send our player back to the server
@@ -66,6 +73,22 @@ socket.on('init', ({ id, players, coin }) => {
 const draw = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
+  context.strokeStyle = 'white';
+  // const centerX = canvas.width / 2;
+  // const centerY = canvas.height / 2;
+
+  // Gives text outside the border a pixelated look
+  // context.clearRect(centerX - (canvas.width - 11) / 2, centerY - (canvas.height - (bannerHeight)) / 2, canvas.width - 11, canvas.height - (bannerHeight - 44));
+
+  // Create border for play field
+  context.strokeRect(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMinY, canvasCalcs.playFieldWidth, canvasCalcs.playFieldHeight);
+  // console.log(centerX - (canvas.width - 10) / 2, centerY - (canvas.height - bannerHeight) / 2, canvas.width - 10, canvas.height - (bannerHeight - 45)) // 5 50 630 425
+
+  // Controls text
+  context.fillStyle = 'white';
+  context.font = `15px 'Press Start 2P'`;
+  context.fillText('Controls: WASD', 10, 32.5);
+
   currPlayers.forEach(player => player.draw(context, item));
 
   // Remove destroyed coin
@@ -75,9 +98,10 @@ const draw = () => {
     }
 
   if (endGame) {
-    context.fillStyle = endGame === 'lose' ? 'red' : 'green';
-    context.font = '100px ariel';
-    context.fillText(`You ${endGame}!`, 100, 100);
+    context.fillStyle = 'white';
+    context.font = `15px 'Press Start 2P'`
+    context.textAlign = "center";
+    context.fillText(`You ${endGame}! Restart and try again.`, canvasCalcs.canvasWidth / 2, 80);
   }
 
   if (!endGame) requestAnimationFrame(draw);

@@ -56,9 +56,18 @@ const server = app.listen(portNum, () => {
 import socket from 'socket.io';
 const io = socket(server);
 import Coin from './public/Coin.mjs';
+import { generateStartPos, canvasCalcs } from './public/canvas-data.mjs';
 
-let currPlayers = []
-let coin = new Coin({ x: Math.random() * 625, y: Math.random() * 465 });
+let currPlayers = [];
+
+const generateCoin = () => {
+  return new Coin({ 
+    x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
+    y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
+  });
+}
+
+let coin = generateCoin();
 
 io.sockets.on('connection', socket => {
   console.log(`New connection ${socket.id}`);
@@ -74,15 +83,19 @@ io.sockets.on('connection', socket => {
   socket.on('move-player', (dir, obj) => {
     socket.broadcast.emit('move-player', { id: socket.id, dir });
     const movingPlayer = currPlayers.find(player => player.id === socket.id);
-    movingPlayer.x = obj.x;
-    movingPlayer.y = obj.y;
+    if (movingPlayer) {
+      movingPlayer.x = obj.x;
+      movingPlayer.y = obj.y;
+    }
   });
 
   socket.on('stop-player', (dir, obj) => {
     socket.broadcast.emit('stop-player', { id: socket.id, dir });
     const stoppingPlayer = currPlayers.find(player => player.id === socket.id);
-    stoppingPlayer.x = obj.x;
-    stoppingPlayer.y = obj.y;
+    if (stoppingPlayer) {
+      stoppingPlayer.x = obj.x;
+      stoppingPlayer.y = obj.y;
+    }
   });
   
   socket.on('destroy-item', ({ playerId }) => {
@@ -99,7 +112,7 @@ io.sockets.on('connection', socket => {
       sock.broadcast.emit('end-game', 'lose');
     } else {
       // Generate new coin and send it to all players
-      coin = new Coin({ x: Math.random() * 625, y: Math.random() * 465, id: 0 })
+      coin = generateCoin();
       io.emit('new-coin', coin);
     }
   });

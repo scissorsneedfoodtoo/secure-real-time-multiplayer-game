@@ -5,7 +5,6 @@ class Coin {
     this.w = w;
     this.h = h;
     this.value = val;
-    // this.id = id;
   }
 
   draw(context) {
