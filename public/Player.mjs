@@ -9,7 +9,7 @@ class Player {
     this.speed = 5;
     this.score = 0;
     this.id = id;
-    this.color = color;
+    this.color = main ? color : 'red'; // Main player is white and opponents are red
     this.movementDirection = {};
     this.isMain = main;
   }
@@ -25,8 +25,9 @@ class Player {
     context.fillRect(this.x, this.y, this.w, this.h);
 
     if (this.isMain) {
-      context.font = `15px 'Press Start 2P'`;
-      context.fillText('Score: ' + this.score, 495, 32.5);
+      context.font = `13px 'Press Start 2P'`;
+      // context.textAlign = 'center';
+      context.fillText(`Score: ${this.score}`, 570, 32.5);
     }
 
     if (this.collide(coin)) {
