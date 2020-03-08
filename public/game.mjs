@@ -7,12 +7,18 @@ const socket = io();
 const canvas = document.getElementById('game-window');
 const context = canvas.getContext('2d');
 
+let tick;
 let currPlayers = [];
 let item;
 let endGame;
 
 socket.on('init', ({ id, players, coin }) => {
   console.log('connected', id);
+
+  // Cancel animation if one already exists and
+  // the page isn't refreshed, like if the server
+  // restarts
+  cancelAnimationFrame(tick);
 
   // Create our player when we log on
   const player = new Player({ 
@@ -34,6 +40,7 @@ socket.on('init', ({ id, players, coin }) => {
   socket.on('move-player', ({ id, dir }) =>
     currPlayers.find(obj => obj.id === id).move(dir)
   );
+
   socket.on('stop-player', ({ id, dir }) =>
     currPlayers.find(obj => obj.id === id).stop(dir)
   );
@@ -54,6 +61,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   // Handle player disconnection
   socket.on('remove-player', id => {
+    console.log(id, id);
     currPlayers = currPlayers.filter(player => player.id !== id);
   });
 
@@ -86,23 +94,28 @@ const draw = () => {
 
   // Controls text
   context.fillStyle = 'white';
-  context.font = `15px 'Press Start 2P'`;
-  context.fillText('Controls: WASD', 10, 32.5);
+  context.font = `13px 'Press Start 2P'`;
+  context.textAlign = 'center';
+  context.fillText('Controls: WASD', 100, 32.5);
+
+  // Game title
+  context.font = `16px 'Press Start 2P'`;
+  context.fillText('Coin Race', canvasCalcs.canvasWidth / 2, 32.5);
 
   currPlayers.forEach(player => player.draw(context, item));
 
   // Remove destroyed coin
     item.draw(context);
     if (item.destroyed) {
-      socket.emit('destroy-item', { playerId: item.destroyed, coinId: item.id });
+      socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val });
     }
 
   if (endGame) {
     context.fillStyle = 'white';
-    context.font = `15px 'Press Start 2P'`
-    context.textAlign = "center";
+    context.font = `13px 'Press Start 2P'`
+    // context.textAlign = 'center';
     context.fillText(`You ${endGame}! Restart and try again.`, canvasCalcs.canvasWidth / 2, 80);
   }
 
-  if (!endGame) requestAnimationFrame(draw);
+  if (!endGame) tick = requestAnimationFrame(draw);
 }

@@ -61,9 +61,21 @@ import { generateStartPos, canvasCalcs } from './public/canvas-data.mjs';
 let currPlayers = [];
 
 const generateCoin = () => {
+  const rand = Math.random();
+  let coinVal;
+
+  if (rand < 0.6) {
+    coinVal = 1;
+  } else if (rand < 0.85) {
+    coinVal = 2;
+  } else {
+    coinVal = 3;
+  }
+
   return new Coin({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
+    val: coinVal
   });
 }
 
@@ -98,23 +110,27 @@ io.sockets.on('connection', socket => {
     }
   });
   
-  socket.on('destroy-item', ({ playerId }) => {
+  socket.on('destroy-item', ({ playerId, coinVal }) => {
+    // console.log(playerId, coinVal);
     const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
     const sock = io.sockets.connected[scoringPlayer.id];
 
-    scoringPlayer.score += 1;
+    scoringPlayer.score += coinVal;
 
     sock.emit('update-player', scoringPlayer);
     // Communicate win state and broadcast losses
-    // if (scoringPlayer.score === 10) {
-    if (scoringPlayer.score === 2) {
+    if (scoringPlayer.score >= 10) {
       sock.emit('end-game', 'win');
       sock.broadcast.emit('end-game', 'lose');
-    } else {
-      // Generate new coin and send it to all players
-      coin = generateCoin();
-      io.emit('new-coin', coin);
-    }
+    } 
+    // else {
+    //   // Generate new coin and send it to all players
+    //   coin = generateCoin();
+    //   io.emit('new-coin', coin);
+    // }
+
+    coin = generateCoin();
+    io.emit('new-coin', coin);
   });
 
   socket.on('disconnect', () => {
