@@ -1,7 +1,7 @@
 import { canvasCalcs } from './canvas-data.mjs';
 
 class Player {
-  constructor({ id, x = 10, y = 10, w = 30, h = 30, color = "white", main }) {
+  constructor({ id, x = 10, y = 10, w = 30, h = 30, main }) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -9,7 +9,6 @@ class Player {
     this.speed = 5;
     this.score = 0;
     this.id = id;
-    this.color = main ? color : 'red'; // Main player is white and opponents are red
     this.movementDirection = {};
     this.isMain = main;
   }
@@ -22,7 +21,6 @@ class Player {
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
-      // context.textAlign = 'center';
       context.fillText(`Score: ${this.score}`, 570, 32.5);
 
       context.drawImage(imgObj.mainPlayer, this.x, this.y);
@@ -31,7 +29,6 @@ class Player {
     }
 
     if (this.collide(coin)) {
-      this.score += coin.value;
       coin.destroyed = this.id;
     }
   }

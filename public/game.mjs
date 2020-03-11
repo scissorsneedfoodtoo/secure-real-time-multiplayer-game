@@ -14,11 +14,11 @@ const loadImage = src => {
   return img;
 }
 
-const bronzeCoin = loadImage('./public/assets/bronze-coin.png');
-const silverCoin = loadImage('./public/assets/silver-coin.png');
-const goldCoin = loadImage('./public/assets/gold-coin.png');
-const mainPlayer = loadImage('./public/assets/main-player.png');
-const otherPlayer = loadImage('./public/assets/other-player.png');
+const bronzeCoin = loadImage('./assets/bronze-coin.png');
+const silverCoin = loadImage('./assets/silver-coin.png');
+const goldCoin = loadImage('./assets/gold-coin.png');
+const mainPlayer = loadImage('./assets/main-player.png');
+const otherPlayer = loadImage('./assets/other-player.png');
 
 let tick;
 let currPlayers = [];
@@ -50,13 +50,23 @@ socket.on('init', ({ id, players, coin }) => {
   socket.on('new-player', obj => currPlayers.push(new Player(obj)));
 
   // Handle movement
-  socket.on('move-player', ({ id, dir }) =>
-    currPlayers.find(obj => obj.id === id).move(dir)
-  );
+  socket.on('move-player', ({ id, dir, posObj }) => {
+    const movingPlayer = currPlayers.find(obj => obj.id === id);
+    movingPlayer.move(dir);
+    
+    // Force sync in case of lag
+    movingPlayer.x = posObj.x;
+    movingPlayer.y = posObj.y;
+  });
 
-  socket.on('stop-player', ({ id, dir }) =>
-    currPlayers.find(obj => obj.id === id).stop(dir)
-  );
+  socket.on('stop-player', ({ id, dir, posObj }) => {
+    const stoppingPlayer = currPlayers.find(obj => obj.id === id);
+    stoppingPlayer.stop(dir);
+
+    // Force sync in case of lag
+    stoppingPlayer.x = posObj.x;
+    stoppingPlayer.y = posObj.y;
+  });
 
   // Handle new coin gen
   socket.on('new-coin', newCoin => {
@@ -107,7 +117,7 @@ const draw = () => {
 
   // Remove destroyed coin
   if (item.destroyed) {
-    socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val });
+    socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val, coinId: item.id });
   }
 
   if (endGame) {
