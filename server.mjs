@@ -11,13 +11,10 @@ import runner from './test-runner.js';
 
 const app = express();
 
-// app.use(helmet.noSniff());
-// app.use(helmet.xssFilter());
 app.use(helmet());
 app.use(helmet.noCache());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
 app.use('/public', express.static(process.cwd() + '/public'));
-// app.use('/assets', express.static(process.cwd() + '/assets'));
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 
 app.use(bodyParser.json());

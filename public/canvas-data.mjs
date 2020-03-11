@@ -2,7 +2,7 @@ const canvasWidth = 640;
 const canvasHeight = 480;
 const playerWidth = 30;
 const playerHeight = 30;
-const border = 5; // between edge of canvas and play field
+const border = 5; // Between edge of canvas and play field
 const infoBar = 45; 
 
 

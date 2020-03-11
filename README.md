@@ -1,4 +1,4 @@
-**freeCodeCamp** - Quality Assurance American / British English Translator
+**freeCodeCamp** - Information Security Secure Real Time Multiplayer Game
 ------
 
 ### User stories:
