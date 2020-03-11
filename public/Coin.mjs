@@ -8,7 +8,6 @@ class Coin {
   }
 
   draw(context, imgObj) {
-    // context.beginPath();
     if (this.val === 1) {
       context.drawImage(imgObj.bronzeCoin, this.x, this.y);
     } else if (this.val === 2) {
@@ -16,8 +15,6 @@ class Coin {
     } else {
       context.drawImage(imgObj.goldCoin, this.x, this.y);
     }
-    
-    // context.fillRect(this.x, this.y, this.w, this.h);
   }
 }
 

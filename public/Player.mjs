@@ -20,10 +20,6 @@ class Player {
     if (this.movementDirection.up) this.y - this.speed >= canvasCalcs.playFieldMinY ? this.y -= this.speed : this.y -= 0;
     if (this.movementDirection.down) this.y + this.speed <= canvasCalcs.playFieldMaxY ? this.y += this.speed : this.y += 0;
 
-    // context.beginPath();
-    // context.fillStyle = this.color;
-    // context.fillRect(this.x, this.y, this.w, this.h);
-
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
       // context.textAlign = 'center';
