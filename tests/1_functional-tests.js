@@ -7,10 +7,10 @@
 *
 */
 
-import chai from 'chai';
-import chaiHttp from 'chai-http';
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const assert = chai.assert;
-import server from'../server';
+const server = require('../server');
 
 chai.use(chaiHttp);
 

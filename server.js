@@ -1,21 +1,22 @@
-import dotenv from 'dotenv';
-dotenv.config();
-import express from 'express';
-import bodyParser from 'body-parser';
-import expect from 'chai';
-import helmet from 'helmet';
-import cors from 'cors';
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const expect = require('chai');
+const helmet = require('helmet');
+const cors = require('cors');
 
-import fccTestingRoutes from './routes/fcctesting.js';
-import runner from './test-runner.js';
+const fccTestingRoutes = require('./routes/fcctesting.js');
+const runner = require('./test-runner.js');
 
 const app = express();
 
 app.use(helmet());
 app.use(helmet.noCache());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
-app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors({origin: '*'})); //For FCC testing purposes only
+
+app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/assets', express.static(process.cwd() + '/assets'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -57,12 +58,13 @@ const server = app.listen(portNum, () => {
 // Socket.io setup:
 // Start app and bind 
 // Socket.io to the same port
-import socket from 'socket.io';
+const socket = require('socket.io');
 const io = socket(server);
-import Coin from './public/Coin.mjs';
-import { generateStartPos, canvasCalcs } from './public/canvas-data.mjs';
+const Coin = require('./public/Coin');
+const { generateStartPos, canvasCalcs } = require('./public/canvas-data');
 
 let currPlayers = [];
+const destroyedCoins = [];
 
 const generateCoin = () => {
   const rand = Math.random();
@@ -79,7 +81,8 @@ const generateCoin = () => {
   return new Coin({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
-    val: coinVal
+    val: coinVal,
+    id: Date.now()
   });
 }
 
@@ -97,39 +100,44 @@ io.sockets.on('connection', socket => {
   });
 
   socket.on('move-player', (dir, obj) => {
-    socket.broadcast.emit('move-player', { id: socket.id, dir });
     const movingPlayer = currPlayers.find(player => player.id === socket.id);
     if (movingPlayer) {
       movingPlayer.x = obj.x;
       movingPlayer.y = obj.y;
     }
+
+    socket.broadcast.emit('move-player', { id: socket.id, dir, posObj: { x: movingPlayer.x, y: movingPlayer.y } });
   });
 
   socket.on('stop-player', (dir, obj) => {
-    socket.broadcast.emit('stop-player', { id: socket.id, dir });
     const stoppingPlayer = currPlayers.find(player => player.id === socket.id);
     if (stoppingPlayer) {
       stoppingPlayer.x = obj.x;
       stoppingPlayer.y = obj.y;
     }
+
+    socket.broadcast.emit('stop-player', { id: socket.id, dir, posObj: { x: stoppingPlayer.x, y: stoppingPlayer.y } });
   });
   
-  socket.on('destroy-item', ({ playerId, coinVal }) => {
-    const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
-    const sock = io.sockets.connected[scoringPlayer.id];
+  socket.on('destroy-item', ({ playerId, coinVal, coinId }) => {
+    if (!destroyedCoins.includes(coinId)) {
+      const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
+      const sock = io.sockets.connected[scoringPlayer.id];
 
-    scoringPlayer.score += coinVal;
+      scoringPlayer.score += coinVal;
+      destroyedCoins.push(coinId);
 
-    sock.emit('update-player', scoringPlayer);
-    // Communicate win state and broadcast losses
-    if (scoringPlayer.score >= 25) {
-      sock.emit('end-game', 'win');
-      sock.broadcast.emit('end-game', 'lose');
-    } 
+      sock.emit('update-player', scoringPlayer);
+      // Communicate win state and broadcast losses
+      if (scoringPlayer.score >= 25) {
+        sock.emit('end-game', 'win');
+        sock.broadcast.emit('end-game', 'lose');
+      } 
 
-    // Generate new coin and send it to all players
-    coin = generateCoin();
-    io.emit('new-coin', coin);
+      // Generate new coin and send it to all players
+      coin = generateCoin();
+      io.emit('new-coin', coin);
+    }
   });
 
   socket.on('disconnect', () => {
@@ -138,4 +146,4 @@ io.sockets.on('connection', socket => {
   });
 });
 
-export default app; // For testing
+module.exports = app; // For testing

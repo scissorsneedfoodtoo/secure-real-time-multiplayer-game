@@ -2,9 +2,9 @@
   "name": "secure-real-time-multiplayer-game",
   "version": "1.0.0",
   "description": "Information Security 5: Secure Real-Time Multiplayer Game",
-  "main": "server.mjs",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon --experimental-modules server.mjs",
+    "start": "nodemon server.js",
     "test": "mocha --require @babel/register --recursive --exit --ui tdd tests/"
   },
   "dependencies": {
