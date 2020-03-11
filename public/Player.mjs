@@ -1,7 +1,7 @@
 import { canvasCalcs } from './canvas-data.mjs';
 
 class Player {
-  constructor({ id, x = 10, y = 10, w = 25, h = 25, color = "white", main }) {
+  constructor({ id, x = 10, y = 10, w = 30, h = 30, color = "white", main }) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -14,20 +14,24 @@ class Player {
     this.isMain = main;
   }
 
-  draw(context, coin) {
+  draw(context, coin, imgObj) {
     if (this.movementDirection.right) this.x + this.speed <= canvasCalcs.playFieldMaxX ? this.x += this.speed : this.x += 0;
     if (this.movementDirection.left) this.x - this.speed >= canvasCalcs.playFieldMinX ? this.x -= this.speed : this.x -= 0;
     if (this.movementDirection.up) this.y - this.speed >= canvasCalcs.playFieldMinY ? this.y -= this.speed : this.y -= 0;
     if (this.movementDirection.down) this.y + this.speed <= canvasCalcs.playFieldMaxY ? this.y += this.speed : this.y += 0;
 
-    context.beginPath();
-    context.fillStyle = this.color;
-    context.fillRect(this.x, this.y, this.w, this.h);
+    // context.beginPath();
+    // context.fillStyle = this.color;
+    // context.fillRect(this.x, this.y, this.w, this.h);
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
       // context.textAlign = 'center';
       context.fillText(`Score: ${this.score}`, 570, 32.5);
+
+      context.drawImage(imgObj.mainPlayer, this.x, this.y);
+    } else {
+      context.drawImage(imgObj.otherPlayer, this.x, this.y);
     }
 
     if (this.collide(coin)) {

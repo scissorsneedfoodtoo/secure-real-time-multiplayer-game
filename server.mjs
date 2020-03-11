@@ -17,6 +17,7 @@ app.use(helmet());
 app.use(helmet.noCache());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
 app.use('/public', express.static(process.cwd() + '/public'));
+// app.use('/assets', express.static(process.cwd() + '/assets'));
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 
 app.use(bodyParser.json());
@@ -117,7 +118,6 @@ io.sockets.on('connection', socket => {
   });
   
   socket.on('destroy-item', ({ playerId, coinVal }) => {
-    // console.log(playerId, coinVal);
     const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
     const sock = io.sockets.connected[scoringPlayer.id];
 
@@ -125,16 +125,12 @@ io.sockets.on('connection', socket => {
 
     sock.emit('update-player', scoringPlayer);
     // Communicate win state and broadcast losses
-    if (scoringPlayer.score >= 10) {
+    if (scoringPlayer.score >= 25) {
       sock.emit('end-game', 'win');
       sock.broadcast.emit('end-game', 'lose');
     } 
-    // else {
-    //   // Generate new coin and send it to all players
-    //   coin = generateCoin();
-    //   io.emit('new-coin', coin);
-    // }
 
+    // Generate new coin and send it to all players
     coin = generateCoin();
     io.emit('new-coin', coin);
   });
@@ -145,5 +141,4 @@ io.sockets.on('connection', socket => {
   });
 });
 
-// module.exports = app; // For testing
 export default app; // For testing

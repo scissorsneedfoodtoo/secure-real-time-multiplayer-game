@@ -11,10 +11,6 @@
     * Allows multiple players to connect to a server and play.
     * Keeps all player in sync.
     * Allows players to disconnect at any time and updates the game accordingly.
-<!-- * When a client connects and a game is in session, the client  -->
-<!--     
-    * Runs the game on the server and sends the current game state to all players.
-    * Listens for updates from each player and sends them back to the server, which updates the game state for all other clients. -->
 6. All 4 functional tests pass.
 
 ### Testing and additional notes
