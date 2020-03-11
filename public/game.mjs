@@ -5,7 +5,20 @@ import { generateStartPos, canvasCalcs } from './canvas-data.mjs';
 
 const socket = io();
 const canvas = document.getElementById('game-window');
-const context = canvas.getContext('2d');
+const context = canvas.getContext('2d', { alpha: false });
+
+// Preload game assets
+const loadImage = src => {
+  const img = new Image();
+  img.src = src;
+  return img;
+}
+
+const bronzeCoin = loadImage('./public/assets/bronze-coin.png');
+const silverCoin = loadImage('./public/assets/silver-coin.png');
+const goldCoin = loadImage('./public/assets/gold-coin.png');
+const mainPlayer = loadImage('./public/assets/main-player.png');
+const otherPlayer = loadImage('./public/assets/other-player.png');
 
 let tick;
 let currPlayers = [];
@@ -13,7 +26,7 @@ let item;
 let endGame;
 
 socket.on('init', ({ id, players, coin }) => {
-  console.log('connected', id);
+  console.log(`Connected ${id}`);
 
   // Cancel animation if one already exists and
   // the page isn't refreshed, like if the server
@@ -45,15 +58,6 @@ socket.on('init', ({ id, players, coin }) => {
     currPlayers.find(obj => obj.id === id).stop(dir)
   );
 
-  // // Handle other players collecting coins (not necessary with single random coin)
-  // socket.on('destroy-item', id => { 
-    // console.log('client destroyed 2', id)
-    // items = items.filter(item => item.id !== id);
-    // socket.emit('new-coin', 'gimme');
-    // item = {};
-    // item = null;
-  // });
-
   // Handle new coin gen
   socket.on('new-coin', newCoin => {
     item = new Coin(newCoin);
@@ -61,7 +65,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   // Handle player disconnection
   socket.on('remove-player', id => {
-    console.log(id, id);
+    console.log(`${id} disconnected`);
     currPlayers = currPlayers.filter(player => player.id !== id);
   });
 
@@ -81,16 +85,9 @@ socket.on('init', ({ id, players, coin }) => {
 const draw = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  context.strokeStyle = 'white';
-  // const centerX = canvas.width / 2;
-  // const centerY = canvas.height / 2;
-
-  // Gives text outside the border a pixelated look
-  // context.clearRect(centerX - (canvas.width - 11) / 2, centerY - (canvas.height - (bannerHeight)) / 2, canvas.width - 11, canvas.height - (bannerHeight - 44));
-
   // Create border for play field
+  context.strokeStyle = 'white';
   context.strokeRect(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMinY, canvasCalcs.playFieldWidth, canvasCalcs.playFieldHeight);
-  // console.log(centerX - (canvas.width - 10) / 2, centerY - (canvas.height - bannerHeight) / 2, canvas.width - 10, canvas.height - (bannerHeight - 45)) // 5 50 630 425
 
   // Controls text
   context.fillStyle = 'white';
@@ -102,18 +99,20 @@ const draw = () => {
   context.font = `16px 'Press Start 2P'`;
   context.fillText('Coin Race', canvasCalcs.canvasWidth / 2, 32.5);
 
-  currPlayers.forEach(player => player.draw(context, item));
+  // Draw players
+  currPlayers.forEach(player => player.draw(context, item, { mainPlayer, otherPlayer }));
+
+  // Draw current coin
+  item.draw(context, { bronzeCoin, silverCoin, goldCoin });
 
   // Remove destroyed coin
-    item.draw(context);
-    if (item.destroyed) {
-      socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val });
-    }
+  if (item.destroyed) {
+    socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val });
+  }
 
   if (endGame) {
     context.fillStyle = 'white';
     context.font = `13px 'Press Start 2P'`
-    // context.textAlign = 'center';
     context.fillText(`You ${endGame}! Restart and try again.`, canvasCalcs.canvasWidth / 2, 80);
   }
 
