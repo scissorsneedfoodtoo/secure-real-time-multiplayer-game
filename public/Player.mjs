@@ -21,7 +21,7 @@ class Player {
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
-      context.fillText(`Score: ${this.score}`, 570, 32.5);
+      context.fillText(`Score: ${this.score}/25`, this.score < 10 ? 555 : 550, 32.5);
 
       context.drawImage(imgObj.mainPlayer, this.x, this.y);
     } else {
@@ -43,38 +43,10 @@ class Player {
 
   collide(p) {
     if (
-      (this.x >= p.x &&
-        this.x <= p.x + p.w &&
-        this.y >= p.y &&
-        this.y <= p.y + p.h) ||
-      (this.x + this.w >= p.x &&
-        this.x + this.w <= p.x + p.w &&
-        this.y >= p.y &&
-        this.y <= p.y + p.h) ||
-      (this.x >= p.x &&
-        this.x <= p.x + p.w &&
-        this.y + this.h >= p.y &&
-        this.y + this.h <= p.y + p.h) ||
-      (this.x + this.w >= p.x &&
-        this.x + this.w <= p.x + p.w &&
-        this.y + this.h >= p.y &&
-        this.y + this.h <= p.y + p.h) ||
-      (p.x >= this.x &&
-        p.x <= this.x + this.w &&
-        p.y >= this.y &&
-        p.y <= this.y + this.h) ||
-      (p.x + p.w >= this.x &&
-        p.x + p.w <= this.x + this.w &&
-        p.y >= this.y &&
-        p.y <= this.y + this.h) ||
-      (p.x >= this.x &&
-        p.x <= this.x + this.w &&
-        p.y + p.h >= this.y &&
-        p.y + p.h <= this.y + this.h) ||
-      (p.x + p.w >= this.x &&
-        p.x + p.w <= this.x + this.w &&
-        p.y + p.h >= this.y &&
-        p.y + p.h <= this.y + this.h)
+      (this.x < p.x + p.w &&
+        this.x + this.w > p.x &&
+        this.y < p.y + p.h &&
+        this.y + this.h > p.y)
     )
       return true;
   }

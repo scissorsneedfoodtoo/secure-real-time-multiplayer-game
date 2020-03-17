@@ -104,9 +104,9 @@ io.sockets.on('connection', socket => {
     if (movingPlayer) {
       movingPlayer.x = obj.x;
       movingPlayer.y = obj.y;
-    }
 
-    socket.broadcast.emit('move-player', { id: socket.id, dir, posObj: { x: movingPlayer.x, y: movingPlayer.y } });
+      socket.broadcast.emit('move-player', { id: socket.id, dir, posObj: { x: movingPlayer.x, y: movingPlayer.y } });
+    }
   });
 
   socket.on('stop-player', (dir, obj) => {
@@ -114,9 +114,9 @@ io.sockets.on('connection', socket => {
     if (stoppingPlayer) {
       stoppingPlayer.x = obj.x;
       stoppingPlayer.y = obj.y;
-    }
 
-    socket.broadcast.emit('stop-player', { id: socket.id, dir, posObj: { x: stoppingPlayer.x, y: stoppingPlayer.y } });
+      socket.broadcast.emit('stop-player', { id: socket.id, dir, posObj: { x: stoppingPlayer.x, y: stoppingPlayer.y } });
+    }
   });
   
   socket.on('destroy-item', ({ playerId, coinVal, coinId }) => {
