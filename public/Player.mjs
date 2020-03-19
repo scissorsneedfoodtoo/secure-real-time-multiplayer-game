@@ -1,4 +1,4 @@
-import { canvasCalcs } from './canvas-data.mjs';
+import { movePlayer } from './helper-functions.mjs';
 
 class Player {
   constructor({ id, x = 10, y = 10, w = 30, h = 30, main }) {
@@ -14,10 +14,18 @@ class Player {
   }
 
   draw(context, coin, imgObj) {
-    if (this.movementDirection.right) this.x + this.speed <= canvasCalcs.playFieldMaxX ? this.x += this.speed : this.x += 0;
-    if (this.movementDirection.left) this.x - this.speed >= canvasCalcs.playFieldMinX ? this.x -= this.speed : this.x -= 0;
-    if (this.movementDirection.up) this.y - this.speed >= canvasCalcs.playFieldMinY ? this.y -= this.speed : this.y -= 0;
-    if (this.movementDirection.down) this.y + this.speed <= canvasCalcs.playFieldMaxY ? this.y += this.speed : this.y += 0;
+    let currPos = { x: this.x, y: this.y }
+
+    const currKeys = Object.keys(this.movementDirection).filter(k => this.movementDirection[k]);
+    currKeys.forEach(key => currPos = movePlayer(key, this.speed, currPos));
+
+    // if (this.movementDirection['D']) currPos = movePlayer('D', this.speed, currPos);
+    // if (this.movementDirection['A']) currPos = movePlayer('A', this.speed, currPos);
+    // if (this.movementDirection['W']) currPos = movePlayer('W', this.speed, currPos);
+    // if (this.movementDirection['S']) currPos = movePlayer('S', this.speed, currPos);
+
+    this.x = currPos.x;
+    this.y = currPos.y;
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
@@ -33,11 +41,11 @@ class Player {
     }
   }
 
-  move(dir) {
+  moveDir(dir) {
     this.movementDirection[dir] = true;
   }
 
-  stop(dir) {
+  stopDir(dir) {
     this.movementDirection[dir] = false;
   }
 

@@ -147,3 +147,4 @@ io.sockets.on('connection', socket => {
 });
 
 module.exports = app; // For testing
+// module.exports = server;

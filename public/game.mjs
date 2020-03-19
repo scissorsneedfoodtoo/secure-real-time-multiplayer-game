@@ -34,17 +34,17 @@ socket.on('init', ({ id, players, coin }) => {
   cancelAnimationFrame(tick);
 
   // Create our player when we log on
-  const player = new Player({ 
+  const mainPlayer = new Player({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
     id, 
     main: true 
   });
 
-  controls(player, socket);
+  controls(mainPlayer, socket);
 
   // Send our player back to the server
-  socket.emit('new-player', player);
+  socket.emit('new-player', mainPlayer);
 
   // Add new player when someone logs on
   socket.on('new-player', obj => currPlayers.push(new Player(obj)));
@@ -52,7 +52,7 @@ socket.on('init', ({ id, players, coin }) => {
   // Handle movement
   socket.on('move-player', ({ id, dir, posObj }) => {
     const movingPlayer = currPlayers.find(obj => obj.id === id);
-    movingPlayer.move(dir);
+    movingPlayer.moveDir(dir);
     
     // Force sync in case of lag
     movingPlayer.x = posObj.x;
@@ -61,7 +61,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   socket.on('stop-player', ({ id, dir, posObj }) => {
     const stoppingPlayer = currPlayers.find(obj => obj.id === id);
-    stoppingPlayer.stop(dir);
+    stoppingPlayer.stopDir(dir);
 
     // Force sync in case of lag
     stoppingPlayer.x = posObj.x;
@@ -82,11 +82,12 @@ socket.on('init', ({ id, players, coin }) => {
   // Handle endGame state
   socket.on('end-game', result => endGame = result);
 
-  socket.on('update-player', obj => (player.score = obj.score));
+  // Update mainPlayer's score
+  socket.on('update-player', obj => (mainPlayer.score = obj.score));
 
-  // Populate players list and create
-  // current coin when logging in
-  currPlayers = players.map(val => new Player(val)).concat(player);
+  // Populate list of connected players and 
+  // create current coin when logging in
+  currPlayers = players.map(val => new Player(val)).concat(mainPlayer);
   item = new Coin(coin);
 
   draw();
@@ -128,3 +129,14 @@ const draw = () => {
 
   if (!endGame) tick = requestAnimationFrame(draw);
 }
+
+// /* 
+//   Export your functions for testing in Node.
+//   Note: The `try` block is to prevent errors on
+//   the client side
+// */
+// try {
+//   module.exports = {
+//     movePlayer
+//   }
+// } catch (e) {}
