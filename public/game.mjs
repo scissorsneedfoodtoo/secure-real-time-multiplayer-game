@@ -1,5 +1,5 @@
 import Player from './Player.mjs';
-import Coin from './Coin.mjs';
+import Collectible from './Collectible.mjs';
 import controls from './controls.mjs';
 import { generateStartPos, canvasCalcs } from './canvas-data.mjs';
 
@@ -70,7 +70,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   // Handle new coin gen
   socket.on('new-coin', newCoin => {
-    item = new Coin(newCoin);
+    item = new Collectible(newCoin);
   });
 
   // Handle player disconnection
@@ -88,7 +88,7 @@ socket.on('init', ({ id, players, coin }) => {
   // Populate list of connected players and 
   // create current coin when logging in
   currPlayers = players.map(val => new Player(val)).concat(mainPlayer);
-  item = new Coin(coin);
+  item = new Collectible(coin);
 
   draw();
 });
@@ -129,14 +129,3 @@ const draw = () => {
 
   if (!endGame) tick = requestAnimationFrame(draw);
 }
-
-// /* 
-//   Export your functions for testing in Node.
-//   Note: The `try` block is to prevent errors on
-//   the client side
-// */
-// try {
-//   module.exports = {
-//     movePlayer
-//   }
-// } catch (e) {}

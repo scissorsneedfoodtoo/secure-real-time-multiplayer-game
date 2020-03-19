@@ -1,4 +1,4 @@
-class Coin {
+class Collectible {
   constructor({ x = 10, y = 10, w = 15, h = 15, val = 1, id }) {
     this.x = x;
     this.y = y;
@@ -19,13 +19,12 @@ class Coin {
   }
 }
 
-/* 
-  module.exports for testing / use in Node.
-  Note: The `try` block is to prevent errors on
-  the client side
+/*
+  Note: Attempt to export this for use
+  in server.js
 */
 try {
-  module.exports = Coin;
+  module.exports = Collectible;
 } catch(e) {}
 
-export default Coin;
+export default Collectible;

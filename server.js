@@ -60,7 +60,7 @@ const server = app.listen(portNum, () => {
 // Socket.io to the same port
 const socket = require('socket.io');
 const io = socket(server);
-const Coin = require('./public/Coin');
+const Collectible = require('./public/Collectible');
 const { generateStartPos, canvasCalcs } = require('./public/canvas-data');
 
 let currPlayers = [];
@@ -78,7 +78,7 @@ const generateCoin = () => {
     coinVal = 3;
   }
 
-  return new Coin({ 
+  return new Collectible({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
     val: coinVal,
@@ -147,4 +147,3 @@ io.sockets.on('connection', socket => {
 });
 
 module.exports = app; // For testing
-// module.exports = server;

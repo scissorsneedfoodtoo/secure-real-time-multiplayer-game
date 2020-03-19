@@ -7,6 +7,8 @@
 *
 */
 
+import Player from '../public/Player.mjs';
+import Collectible from '../public/Collectible.mjs';
 const chai = require('chai');
 const assert = chai.assert;
 const canvas = require("canvas");
@@ -19,17 +21,68 @@ global.window = dom.window;
 global.document = dom.window.document;
 global.Image = canvas.Image;
 
-import { movePlayer } from '../public/helper-functions.mjs';
-
-
 suite('Unit Tests', () => {
 
-  suite('Movement test', () => {
-    test("Blah blah", done => {
-      assert.deepStrictEqual([], []);
+  suite('Collectible class', () => {
+    test('Collectible class generates a collectible item object', done => {
+      const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
+
+      assert.isObject(testItem);
       done();
     });
 
+    test('Collectible item object contains x and y coordinates and a unique id', done => {
+      const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
+
+      assert.typeOf(testItem.x, 'Number');
+      assert.typeOf(testItem.y, 'Number');
+      assert.exists(testItem.id);
+      done();
+    });
+  });
+
+  suite('Player class', () => {
+    test('Player class generates a player object', done => {
+      const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
+
+      assert.isObject(testPlayer);
+      done();
+    });
+
+    test('Player object contains a score, x and y coordinates, and a unique id', done => {
+      const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
+
+      assert.typeOf(testPlayer.x, 'Number');
+      assert.typeOf(testPlayer.y, 'Number');
+      assert.typeOf(testPlayer.score, 'Number');
+      assert.exists(testPlayer.id);
+      done();
+    });
+
+    test("movePlayer(str, num) adjusts a player's position", done => {
+      // Note: Only testing movement along the x axis in case
+      // the game is a 2D platformer
+      const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
+      testPlayer.movePlayer('D', 5);
+      const testPos1 = { x: testPlayer.x, y: testPlayer.y }
+      const expectedPos1 = { x: 105, y: 100 }
+
+      testPlayer.movePlayer('A', 10);
+      const testPos2 = { x: testPlayer.x, y: testPlayer.y }
+      const expectedPos2 = { x: 95, y: 100 }
+
+      assert.deepEqual(testPos1, expectedPos1);
+      assert.deepEqual(testPos2, expectedPos2);      
+      done();
+    });
+
+    test("collision(obj) returns true when a player's avatar collides with a collectible item object", done => {
+      const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
+      const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
+
+      assert.isTrue(testPlayer.collision(testItem));
+      done();
+    });
   });
 
 });

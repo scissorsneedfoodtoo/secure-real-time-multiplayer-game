@@ -12,10 +12,6 @@ const assert = chai.assert;
 const chaiHttp = require('chai-http');
 const server = require('../server');
 
-// // Mock the DOM for testing
-// const { JSDOM } = require('jsdom');
-// const dom = new JSDOM(`<!DOCTYPE html><html><head><script src="/socket.io/socket.io.js"></script></head><body><div class="container"><canvas ref="game" id="game-window" width="640" height="480"></canvas></div></body></html>`);
-
 chai.use(chaiHttp);
 
 suite('Functional Tests', () => {
@@ -59,7 +55,6 @@ suite('Functional Tests', () => {
           done();
         });
     });
-
   });
 
 });

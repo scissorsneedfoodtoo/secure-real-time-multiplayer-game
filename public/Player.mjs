@@ -1,4 +1,4 @@
-import { movePlayer } from './helper-functions.mjs';
+import { canvasCalcs } from './canvas-data.mjs';
 
 class Player {
   constructor({ id, x = 10, y = 10, w = 30, h = 30, main }) {
@@ -14,18 +14,8 @@ class Player {
   }
 
   draw(context, coin, imgObj) {
-    let currPos = { x: this.x, y: this.y }
-
     const currKeys = Object.keys(this.movementDirection).filter(k => this.movementDirection[k]);
-    currKeys.forEach(key => currPos = movePlayer(key, this.speed, currPos));
-
-    // if (this.movementDirection['D']) currPos = movePlayer('D', this.speed, currPos);
-    // if (this.movementDirection['A']) currPos = movePlayer('A', this.speed, currPos);
-    // if (this.movementDirection['W']) currPos = movePlayer('W', this.speed, currPos);
-    // if (this.movementDirection['S']) currPos = movePlayer('S', this.speed, currPos);
-
-    this.x = currPos.x;
-    this.y = currPos.y;
+    currKeys.forEach(key => this.movePlayer(key, this.speed));
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
@@ -36,7 +26,7 @@ class Player {
       context.drawImage(imgObj.otherPlayer, this.x, this.y);
     }
 
-    if (this.collide(coin)) {
+    if (this.collision(coin)) {
       coin.destroyed = this.id;
     }
   }
@@ -49,12 +39,19 @@ class Player {
     this.movementDirection[dir] = false;
   }
 
-  collide(p) {
+  movePlayer(key, speed) {
+    if (key === 'D') this.x + speed <= canvasCalcs.playFieldMaxX ? this.x += speed : this.x += 0;
+    if (key === 'A') this.x - speed >= canvasCalcs.playFieldMinX ? this.x -= speed : this.x -= 0;
+    if (key === 'W') this.y - speed >= canvasCalcs.playFieldMinY ? this.y -= speed : this.y -= 0;
+    if (key === 'S') this.y + speed <= canvasCalcs.playFieldMaxY ? this.y += speed : this.y += 0;
+  }
+
+  collision(item) {
     if (
-      (this.x < p.x + p.w &&
-        this.x + this.w > p.x &&
-        this.y < p.y + p.h &&
-        this.y + this.h > p.y)
+      (this.x < item.x + item.w &&
+        this.x + this.w > item.x &&
+        this.y < item.y + item.h &&
+        this.y + this.h > item.y)
     )
       return true;
   }
