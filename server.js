@@ -68,20 +68,20 @@ const destroyedCoins = [];
 
 const generateCoin = () => {
   const rand = Math.random();
-  let coinVal;
+  let coinValue;
 
   if (rand < 0.6) {
-    coinVal = 1;
+    coinValue = 1;
   } else if (rand < 0.85) {
-    coinVal = 2;
+    coinValue = 2;
   } else {
-    coinVal = 3;
+    coinValue = 3;
   }
 
   return new Collectible({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
-    val: coinVal,
+    value: coinValue,
     id: Date.now()
   });
 }
@@ -119,12 +119,12 @@ io.sockets.on('connection', socket => {
     }
   });
   
-  socket.on('destroy-item', ({ playerId, coinVal, coinId }) => {
+  socket.on('destroy-item', ({ playerId, coinValue, coinId }) => {
     if (!destroyedCoins.includes(coinId)) {
       const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
       const sock = io.sockets.connected[scoringPlayer.id];
 
-      scoringPlayer.score += coinVal;
+      scoringPlayer.score += coinValue;
       destroyedCoins.push(coinId);
 
       sock.emit('update-player', scoringPlayer);

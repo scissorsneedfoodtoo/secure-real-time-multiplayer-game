@@ -8,9 +8,9 @@ Develop a 2D real time multiplayer game using the HTML Canvas API and [Socket.io
 1. Multiple players can connect to a server and play.
 2. Each player has an avatar.
 3. Each player is represented by an object created by the `Player` class in `Player.mjs`.
-4. At a minimum, each player object should contain a unique `id`, a `score`, along with `x` and `y` coordinates representing the player's current position.
+4. At a minimum, each player object should contain a unique `id`, a `score`, and `x` and `y` coordinates representing the player's current position.
 5. The game has at least one type of collectible item. Complete the `Collectible` class in `Collectible.mjs` to implement this.
-6. At a minimum, each collectible item object created by the `Collectible` class should contain a unique `id`, along with `x` and `y` coordinates representing the item's current position.
+6. At a minimum, each collectible item object created by the `Collectible` class should contain a unique `id`, a `value`, and `x` and `y` coordinates representing the item's current position.
 7. Players can use the WASD and/or arrow keys to move their avatar. Complete the `movePlayer` method in `Player.mjs` to implement this.
 8. The `movePlayer` method should accept two arguments: a string of "up", "down", "left", or "right", and a number for the amount of pixels the player's position should change. `movePlayer` should adjust the `x` and `y` coordinates of the player object it's called from.
 9. Players can collide with a collectible item. Complete the `collision` method in `Player.mjs` to implement this.

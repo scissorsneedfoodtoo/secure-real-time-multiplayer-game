@@ -14,8 +14,8 @@ class Player {
   }
 
   draw(context, coin, imgObj) {
-    const currKeys = Object.keys(this.movementDirection).filter(k => this.movementDirection[k]);
-    currKeys.forEach(key => this.movePlayer(key, this.speed));
+    const currDir = Object.keys(this.movementDirection).filter(dir => this.movementDirection[dir]);
+    currDir.forEach(dir => this.movePlayer(dir, this.speed));
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
@@ -39,11 +39,11 @@ class Player {
     this.movementDirection[dir] = false;
   }
 
-  movePlayer(key, speed) {
-    if (key === 'D') this.x + speed <= canvasCalcs.playFieldMaxX ? this.x += speed : this.x += 0;
-    if (key === 'A') this.x - speed >= canvasCalcs.playFieldMinX ? this.x -= speed : this.x -= 0;
-    if (key === 'W') this.y - speed >= canvasCalcs.playFieldMinY ? this.y -= speed : this.y -= 0;
-    if (key === 'S') this.y + speed <= canvasCalcs.playFieldMaxY ? this.y += speed : this.y += 0;
+  movePlayer(dir, speed) {
+    if (dir === 'up') this.y - speed >= canvasCalcs.playFieldMinY ? this.y -= speed : this.y -= 0;
+    if (dir === 'down') this.y + speed <= canvasCalcs.playFieldMaxY ? this.y += speed : this.y += 0;
+    if (dir === 'left') this.x - speed >= canvasCalcs.playFieldMinX ? this.x -= speed : this.x -= 0;
+    if (dir === 'right') this.x + speed <= canvasCalcs.playFieldMaxX ? this.x += speed : this.x += 0;
   }
 
   collision(item) {

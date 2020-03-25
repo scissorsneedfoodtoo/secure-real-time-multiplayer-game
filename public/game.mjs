@@ -87,7 +87,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   // Populate list of connected players and 
   // create current coin when logging in
-  currPlayers = players.map(val => new Player(val)).concat(mainPlayer);
+  currPlayers = players.map(value => new Player(value)).concat(mainPlayer);
   item = new Collectible(coin);
 
   draw();
@@ -118,7 +118,7 @@ const draw = () => {
 
   // Remove destroyed coin
   if (item.destroyed) {
-    socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val, coinId: item.id });
+    socket.emit('destroy-item', { playerId: item.destroyed, coinValue: item.value, coinId: item.id });
   }
 
   if (endGame) {
@@ -129,3 +129,13 @@ const draw = () => {
 
   if (!endGame) tick = requestAnimationFrame(draw);
 }
+
+/*
+  Note: Attempt to export this for testing
+  but hide errors in the client
+*/
+try {
+  module.exports = {
+    currPlayers
+  }
+} catch(e) {}

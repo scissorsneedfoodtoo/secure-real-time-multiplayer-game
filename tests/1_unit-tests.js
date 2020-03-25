@@ -11,17 +11,21 @@ import Player from '../public/Player.mjs';
 import Collectible from '../public/Collectible.mjs';
 const chai = require('chai');
 const assert = chai.assert;
-const canvas = require("canvas");
-
-// Mock the DOM for testing
+const canvas = require('canvas');
 const { JSDOM } = require('jsdom');
-const dom = new JSDOM(`<!DOCTYPE html><html><head><script src="/socket.io/socket.io.js"></script></head><body><div class="container"><canvas ref="game" id="game-window" width="640" height="480"></canvas></div></body></html>`);
 
-global.window = dom.window;
-global.document = dom.window.document;
 global.Image = canvas.Image;
 
 suite('Unit Tests', () => {
+  suiteSetup(() => {
+    // Mock the DOM for testing and load Solver
+    return JSDOM.fromFile('./views/index.html')
+      .then((dom) => {
+
+        global.window = dom.window;
+        global.document = dom.window.document;
+      });
+  });
 
   suite('Collectible class', () => {
     test('Collectible class generates a collectible item object', done => {
@@ -63,11 +67,11 @@ suite('Unit Tests', () => {
       // Note: Only testing movement along the x axis in case
       // the game is a 2D platformer
       const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
-      testPlayer.movePlayer('D', 5);
+      testPlayer.movePlayer('right', 5);
       const testPos1 = { x: testPlayer.x, y: testPlayer.y }
       const expectedPos1 = { x: 105, y: 100 }
 
-      testPlayer.movePlayer('A', 10);
+      testPlayer.movePlayer('left', 10);
       const testPos2 = { x: testPlayer.x, y: testPlayer.y }
       const expectedPos2 = { x: 95, y: 100 }
 
@@ -78,7 +82,7 @@ suite('Unit Tests', () => {
 
     test("collision(obj) returns true when a player's avatar collides with a collectible item object", done => {
       const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
-      const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
+      const testItem = new Collectible({ x: 100, y: 100, value: 1, id: Date.now() });
 
       assert.isTrue(testPlayer.collision(testItem));
       done();
