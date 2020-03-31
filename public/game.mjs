@@ -96,6 +96,10 @@ socket.on('init', ({ id, players, coin }) => {
 const draw = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Set background color
+  context.fillStyle = '#220';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
   // Create border for play field
   context.strokeStyle = 'white';
   context.strokeRect(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMinY, canvasCalcs.playFieldWidth, canvasCalcs.playFieldHeight);
