@@ -8,8 +8,8 @@
 */
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
 const assert = chai.assert;
+const chaiHttp = require('chai-http');
 const server = require('../server');
 
 chai.use(chaiHttp);
@@ -17,7 +17,7 @@ chai.use(chaiHttp);
 suite('Functional Tests', () => {
 
   suite('Headers test', () => {
-    test("Prevent the client from trying to guess / sniff the MIME type", done => {
+    test("Prevent the client from trying to guess / sniff the MIME type.", done => {
       chai.request(server)
         .get('/')
         .end((err, res) => {
@@ -26,7 +26,7 @@ suite('Functional Tests', () => {
         });
     });
 
-    test("Prevent cross-site scripting (XSS) attacks", done => {
+    test("Prevent cross-site scripting (XSS) attacks.", done => {
       chai.request(server)
         .get('/')
         .end((err, res) => {
@@ -47,7 +47,7 @@ suite('Functional Tests', () => {
         });
     });
 
-    test("The headers say that the site is powered by 'PHP 7.4.3'", done => {
+    test("The headers say that the site is powered by 'PHP 7.4.3'.", done => {
       chai.request(server)
         .get('/')
         .end((err, res) => {
@@ -55,7 +55,6 @@ suite('Functional Tests', () => {
           done();
         });
     });
-
   });
 
 });

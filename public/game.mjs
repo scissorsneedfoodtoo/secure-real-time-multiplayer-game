@@ -1,5 +1,5 @@
 import Player from './Player.mjs';
-import Coin from './Coin.mjs';
+import Collectible from './Collectible.mjs';
 import controls from './controls.mjs';
 import { generateStartPos, canvasCalcs } from './canvas-data.mjs';
 
@@ -14,11 +14,11 @@ const loadImage = src => {
   return img;
 }
 
-const bronzeCoin = loadImage('./assets/bronze-coin.png');
-const silverCoin = loadImage('./assets/silver-coin.png');
-const goldCoin = loadImage('./assets/gold-coin.png');
-const mainPlayer = loadImage('./assets/main-player.png');
-const otherPlayer = loadImage('./assets/other-player.png');
+const bronzeCoinArt = loadImage('./assets/bronze-coin.png');
+const silverCoinArt = loadImage('./assets/silver-coin.png');
+const goldCoinArt = loadImage('./assets/gold-coin.png');
+const mainPlayerArt = loadImage('./assets/main-player.png');
+const otherPlayerArt = loadImage('./assets/other-player.png');
 
 let tick;
 let currPlayers = [];
@@ -34,25 +34,29 @@ socket.on('init', ({ id, players, coin }) => {
   cancelAnimationFrame(tick);
 
   // Create our player when we log on
-  const player = new Player({ 
+  const mainPlayer = new Player({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
     id, 
     main: true 
   });
 
-  controls(player, socket);
+  controls(mainPlayer, socket);
 
   // Send our player back to the server
-  socket.emit('new-player', player);
+  socket.emit('new-player', mainPlayer);
 
   // Add new player when someone logs on
-  socket.on('new-player', obj => currPlayers.push(new Player(obj)));
+  socket.on('new-player', obj => {
+    // Check that player doesn't already exist
+    const playerIds = currPlayers.map(player => player.id);
+    if (!playerIds.includes(obj.id)) currPlayers.push(new Player(obj));
+  });
 
   // Handle movement
   socket.on('move-player', ({ id, dir, posObj }) => {
     const movingPlayer = currPlayers.find(obj => obj.id === id);
-    movingPlayer.move(dir);
+    movingPlayer.moveDir(dir);
     
     // Force sync in case of lag
     movingPlayer.x = posObj.x;
@@ -61,7 +65,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   socket.on('stop-player', ({ id, dir, posObj }) => {
     const stoppingPlayer = currPlayers.find(obj => obj.id === id);
-    stoppingPlayer.stop(dir);
+    stoppingPlayer.stopDir(dir);
 
     // Force sync in case of lag
     stoppingPlayer.x = posObj.x;
@@ -70,7 +74,7 @@ socket.on('init', ({ id, players, coin }) => {
 
   // Handle new coin gen
   socket.on('new-coin', newCoin => {
-    item = new Coin(newCoin);
+    item = new Collectible(newCoin);
   });
 
   // Handle player disconnection
@@ -82,18 +86,26 @@ socket.on('init', ({ id, players, coin }) => {
   // Handle endGame state
   socket.on('end-game', result => endGame = result);
 
-  socket.on('update-player', obj => (player.score = obj.score));
+  // Update scoring player's score
+  socket.on('update-player', playerObj => {
+    const scoringPlayer = currPlayers.find(obj => obj.id === playerObj.id);
+    scoringPlayer.score = playerObj.score;
+  });
 
-  // Populate players list and create
-  // current coin when logging in
-  currPlayers = players.map(val => new Player(val)).concat(player);
-  item = new Coin(coin);
+  // Populate list of connected players and 
+  // create current coin when logging in
+  currPlayers = players.map(val => new Player(val)).concat(mainPlayer);
+  item = new Collectible(coin);
 
   draw();
 });
 
 const draw = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Set background color
+  context.fillStyle = '#220';
+  context.fillRect(0, 0, canvas.width, canvas.height);
 
   // Create border for play field
   context.strokeStyle = 'white';
@@ -109,15 +121,17 @@ const draw = () => {
   context.font = `16px 'Press Start 2P'`;
   context.fillText('Coin Race', canvasCalcs.canvasWidth / 2, 32.5);
 
-  // Draw players
-  currPlayers.forEach(player => player.draw(context, item, { mainPlayer, otherPlayer }));
+  // Calculate score and draw players each frame
+  currPlayers.forEach(player => {
+    player.draw(context, item, { mainPlayerArt, otherPlayerArt }, currPlayers);
+  });
 
   // Draw current coin
-  item.draw(context, { bronzeCoin, silverCoin, goldCoin });
+  item.draw(context, { bronzeCoinArt, silverCoinArt, goldCoinArt });
 
   // Remove destroyed coin
   if (item.destroyed) {
-    socket.emit('destroy-item', { playerId: item.destroyed, coinVal: item.val, coinId: item.id });
+    socket.emit('destroy-item', { playerId: item.destroyed, coinValue: item.value, coinId: item.id });
   }
 
   if (endGame) {

@@ -60,7 +60,7 @@ const server = app.listen(portNum, () => {
 // Socket.io to the same port
 const socket = require('socket.io');
 const io = socket(server);
-const Coin = require('./public/Coin');
+const Collectible = require('./public/Collectible');
 const { generateStartPos, canvasCalcs } = require('./public/canvas-data');
 
 let currPlayers = [];
@@ -68,20 +68,20 @@ const destroyedCoins = [];
 
 const generateCoin = () => {
   const rand = Math.random();
-  let coinVal;
+  let coinValue;
 
   if (rand < 0.6) {
-    coinVal = 1;
+    coinValue = 1;
   } else if (rand < 0.85) {
-    coinVal = 2;
+    coinValue = 2;
   } else {
-    coinVal = 3;
+    coinValue = 3;
   }
 
-  return new Coin({ 
+  return new Collectible({ 
     x: generateStartPos(canvasCalcs.playFieldMinX, canvasCalcs.playFieldMaxX, 5),
     y: generateStartPos(canvasCalcs.playFieldMinY, canvasCalcs.playFieldMaxY, 5),
-    val: coinVal,
+    value: coinValue,
     id: Date.now()
   });
 }
@@ -104,9 +104,9 @@ io.sockets.on('connection', socket => {
     if (movingPlayer) {
       movingPlayer.x = obj.x;
       movingPlayer.y = obj.y;
-    }
 
-    socket.broadcast.emit('move-player', { id: socket.id, dir, posObj: { x: movingPlayer.x, y: movingPlayer.y } });
+      socket.broadcast.emit('move-player', { id: socket.id, dir, posObj: { x: movingPlayer.x, y: movingPlayer.y } });
+    }
   });
 
   socket.on('stop-player', (dir, obj) => {
@@ -114,22 +114,24 @@ io.sockets.on('connection', socket => {
     if (stoppingPlayer) {
       stoppingPlayer.x = obj.x;
       stoppingPlayer.y = obj.y;
-    }
 
-    socket.broadcast.emit('stop-player', { id: socket.id, dir, posObj: { x: stoppingPlayer.x, y: stoppingPlayer.y } });
+      socket.broadcast.emit('stop-player', { id: socket.id, dir, posObj: { x: stoppingPlayer.x, y: stoppingPlayer.y } });
+    }
   });
   
-  socket.on('destroy-item', ({ playerId, coinVal, coinId }) => {
+  socket.on('destroy-item', ({ playerId, coinValue, coinId }) => {
     if (!destroyedCoins.includes(coinId)) {
       const scoringPlayer = currPlayers.find(obj => obj.id === playerId);
       const sock = io.sockets.connected[scoringPlayer.id];
 
-      scoringPlayer.score += coinVal;
+      scoringPlayer.score += coinValue;
       destroyedCoins.push(coinId);
 
-      sock.emit('update-player', scoringPlayer);
+      // Broadcast to all players when someone scores
+      io.emit('update-player', scoringPlayer);
+
       // Communicate win state and broadcast losses
-      if (scoringPlayer.score >= 25) {
+      if (scoringPlayer.score >= 100) {
         sock.emit('end-game', 'win');
         sock.broadcast.emit('end-game', 'lose');
       } 

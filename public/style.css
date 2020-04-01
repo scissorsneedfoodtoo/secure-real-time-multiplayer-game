@@ -1,6 +1,17 @@
+body {
+  margin: 20px;
+}
+
+code {
+  background: #d0d0d5;
+}
+
+canvas {
+  margin: auto;
+}
+
 #user-stories {
-  margin-left: 5%; 
-  margin-top: 5%;
+  font-size: 1.3rem;
 }
 
 .container {
@@ -8,71 +19,8 @@
   flex-direction: column;
 }
 
-.form-container {
-  max-width: 95%;
-}
-
-canvas {
-  display: block;
-  background-color: #220;
-  margin: auto;
-}
-
-#user-stories,
-#output-container,
-#text-input {
-  font-size: 1.1rem;
-}
-
-#output-container {
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-}
-
-#solution-container {
-  font-weight: bold;
-}
-
-#solution-container {
-  margin-left: 20px;
-}
-
-#translated-sentence {
-  margin-top: 10px;
-  font-weight: normal;
-}
-
-#error-msg {
-  font-weight: normal;
-  color: red;
-}
-
-.highlight {
-  color: green;
-}
-
-#text-input {
-  padding: 10px;
-}
-
 @media (min-width: 800px) {
   .container {
     flex-direction: row;
-  }
-
-  .form-container {
-    align-self: flex-end;
-  }
-
-  #output-container {
-    flex-direction: row;
-    margin-top: 0;
-    margin-left: 20px;
-  }
-
-  #solution-container {
-    width: 75%;
-    margin-top: 0;
   }
 }
