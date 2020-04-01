@@ -127,9 +127,11 @@ io.sockets.on('connection', socket => {
       scoringPlayer.score += coinValue;
       destroyedCoins.push(coinId);
 
-      sock.emit('update-player', scoringPlayer);
+      // Broadcast to all players when someone scores
+      io.emit('update-player', scoringPlayer);
+
       // Communicate win state and broadcast losses
-      if (scoringPlayer.score >= 25) {
+      if (scoringPlayer.score >= 100) {
         sock.emit('end-game', 'win');
         sock.broadcast.emit('end-game', 'lose');
       } 

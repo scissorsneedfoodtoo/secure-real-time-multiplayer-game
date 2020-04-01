@@ -1,29 +1,29 @@
 import { canvasCalcs } from './canvas-data.mjs';
 
 class Player {
-  constructor({ id, x = 10, y = 10, w = 30, h = 30, main }) {
+  constructor({ id, x = 10, y = 10, w = 30, h = 30, score = 0, main }) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
     this.speed = 5;
-    this.score = 0;
+    this.score = score;
     this.id = id;
     this.movementDirection = {};
     this.isMain = main;
   }
 
-  draw(context, coin, imgObj) {
+  draw(context, coin, imgObj, currPlayers) {
     const currDir = Object.keys(this.movementDirection).filter(dir => this.movementDirection[dir]);
     currDir.forEach(dir => this.movePlayer(dir, this.speed));
 
     if (this.isMain) {
       context.font = `13px 'Press Start 2P'`;
-      context.fillText(`Score: ${this.score}/25`, this.score < 10 ? 555 : 550, 32.5);
+      context.fillText(this.calculateRank(currPlayers), 560, 32.5);
 
-      context.drawImage(imgObj.mainPlayer, this.x, this.y);
+      context.drawImage(imgObj.mainPlayerArt, this.x, this.y);
     } else {
-      context.drawImage(imgObj.otherPlayer, this.x, this.y);
+      context.drawImage(imgObj.otherPlayerArt, this.x, this.y);
     }
 
     if (this.collision(coin)) {
@@ -54,6 +54,13 @@ class Player {
         this.y + this.h > item.y)
     )
       return true;
+  }
+
+  calculateRank(arr) {
+    const sortedScores = arr.sort((a, b) => b.score - a.score);
+    const mainPlayerRank = this.score === 0 ? arr.length : (sortedScores.findIndex(obj => obj.id === this.id) + 1);
+
+    return `Rank: ${mainPlayerRank} / ${arr.length}`
   }
 }
 

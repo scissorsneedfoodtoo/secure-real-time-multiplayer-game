@@ -10,11 +10,11 @@ class Collectible {
 
   draw(context, imgObj) {
     if (this.value === 1) {
-      context.drawImage(imgObj.bronzeCoin, this.x, this.y);
+      context.drawImage(imgObj.bronzeCoinArt, this.x, this.y);
     } else if (this.value === 2) {
-      context.drawImage(imgObj.silverCoin, this.x, this.y);
+      context.drawImage(imgObj.silverCoinArt, this.x, this.y);
     } else {
-      context.drawImage(imgObj.goldCoin, this.x, this.y);
+      context.drawImage(imgObj.goldCoinArt, this.x, this.y);
     }
   }
 }

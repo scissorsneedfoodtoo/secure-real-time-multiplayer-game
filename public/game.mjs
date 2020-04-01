@@ -14,11 +14,11 @@ const loadImage = src => {
   return img;
 }
 
-const bronzeCoin = loadImage('./assets/bronze-coin.png');
-const silverCoin = loadImage('./assets/silver-coin.png');
-const goldCoin = loadImage('./assets/gold-coin.png');
-const mainPlayer = loadImage('./assets/main-player.png');
-const otherPlayer = loadImage('./assets/other-player.png');
+const bronzeCoinArt = loadImage('./assets/bronze-coin.png');
+const silverCoinArt = loadImage('./assets/silver-coin.png');
+const goldCoinArt = loadImage('./assets/gold-coin.png');
+const mainPlayerArt = loadImage('./assets/main-player.png');
+const otherPlayerArt = loadImage('./assets/other-player.png');
 
 let tick;
 let currPlayers = [];
@@ -47,7 +47,11 @@ socket.on('init', ({ id, players, coin }) => {
   socket.emit('new-player', mainPlayer);
 
   // Add new player when someone logs on
-  socket.on('new-player', obj => currPlayers.push(new Player(obj)));
+  socket.on('new-player', obj => {
+    // Check that player doesn't already exist
+    const playerIds = currPlayers.map(player => player.id);
+    if (!playerIds.includes(obj.id)) currPlayers.push(new Player(obj));
+  });
 
   // Handle movement
   socket.on('move-player', ({ id, dir, posObj }) => {
@@ -82,12 +86,15 @@ socket.on('init', ({ id, players, coin }) => {
   // Handle endGame state
   socket.on('end-game', result => endGame = result);
 
-  // Update mainPlayer's score
-  socket.on('update-player', obj => (mainPlayer.score = obj.score));
+  // Update scoring player's score
+  socket.on('update-player', playerObj => {
+    const scoringPlayer = currPlayers.find(obj => obj.id === playerObj.id);
+    scoringPlayer.score = playerObj.score;
+  });
 
   // Populate list of connected players and 
   // create current coin when logging in
-  currPlayers = players.map(value => new Player(value)).concat(mainPlayer);
+  currPlayers = players.map(val => new Player(val)).concat(mainPlayer);
   item = new Collectible(coin);
 
   draw();
@@ -114,11 +121,16 @@ const draw = () => {
   context.font = `16px 'Press Start 2P'`;
   context.fillText('Coin Race', canvasCalcs.canvasWidth / 2, 32.5);
 
-  // Draw players
-  currPlayers.forEach(player => player.draw(context, item, { mainPlayer, otherPlayer }));
+  // Calculate score and draw players each frame
+  // const currScoresArr = currPlayers.map(obj => ({ id: obj.id, score: obj.score }));
+  // console.log(currScoresArr);
+  currPlayers.forEach(player => {
+    // player.calculateRank(context, currPlayers);
+    player.draw(context, item, { mainPlayerArt, otherPlayerArt }, currPlayers);
+  });
 
   // Draw current coin
-  item.draw(context, { bronzeCoin, silverCoin, goldCoin });
+  item.draw(context, { bronzeCoinArt, silverCoinArt, goldCoinArt });
 
   // Remove destroyed coin
   if (item.destroyed) {
@@ -134,12 +146,16 @@ const draw = () => {
   if (!endGame) tick = requestAnimationFrame(draw);
 }
 
-/*
-  Note: Attempt to export this for testing
-  but hide errors in the client
-*/
-try {
-  module.exports = {
-    currPlayers
-  }
-} catch(e) {}
+// /*
+//   Note: Attempt to export this for testing
+//   but hide errors in the client
+// */
+// try {
+//   module.exports = {
+//     currPlayers
+//   }
+// } catch(e) {}
+
+// export {
+//   currPlayers
+// }

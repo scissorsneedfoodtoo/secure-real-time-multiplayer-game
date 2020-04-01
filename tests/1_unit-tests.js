@@ -81,10 +81,23 @@ suite('Unit Tests', () => {
     });
 
     test("collision(obj) returns true when a player's avatar collides with a collectible item object", done => {
-      const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
+      const testPlayer = new Player({ x: 100, y: 100, id: Date.now() });
       const testItem = new Collectible({ x: 100, y: 100, value: 1, id: Date.now() });
 
       assert.isTrue(testPlayer.collision(testItem));
+      done();
+    });
+
+    test("calculateRank(arr) returns the player's rank string", done => {
+      const testPlayer1 = new Player({ x: 100, y: 100, id: 1 });
+      const testPlayer2 = new Player({ x: 150, y: 150, id: 2 });
+      testPlayer1.score = 5;
+      testPlayer2.score = 3;
+      const testArr = [ testPlayer1, testPlayer2 ];
+
+      // Account for possible space
+      assert.match(testPlayer1.calculateRank(testArr), /Rank\: 1\s?\/\s?2/);
+      assert.match(testPlayer2.calculateRank(testArr), /Rank\: 2\s?\/\s?2/);
       done();
     });
   });
