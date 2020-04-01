@@ -122,10 +122,7 @@ const draw = () => {
   context.fillText('Coin Race', canvasCalcs.canvasWidth / 2, 32.5);
 
   // Calculate score and draw players each frame
-  // const currScoresArr = currPlayers.map(obj => ({ id: obj.id, score: obj.score }));
-  // console.log(currScoresArr);
   currPlayers.forEach(player => {
-    // player.calculateRank(context, currPlayers);
     player.draw(context, item, { mainPlayerArt, otherPlayerArt }, currPlayers);
   });
 
@@ -145,17 +142,3 @@ const draw = () => {
 
   if (!endGame) tick = requestAnimationFrame(draw);
 }
-
-// /*
-//   Note: Attempt to export this for testing
-//   but hide errors in the client
-// */
-// try {
-//   module.exports = {
-//     currPlayers
-//   }
-// } catch(e) {}
-
-// export {
-//   currPlayers
-// }

@@ -28,14 +28,14 @@ suite('Unit Tests', () => {
   });
 
   suite('Collectible class', () => {
-    test('Collectible class generates a collectible item object', done => {
+    test('Collectible class generates a collectible item object.', done => {
       const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
 
       assert.isObject(testItem);
       done();
     });
 
-    test('Collectible item object contains x and y coordinates and a unique id', done => {
+    test('Collectible item object contains x and y coordinates and a unique id.', done => {
       const testItem = new Collectible({ x: 100, y: 100, id: Date.now() });
 
       assert.typeOf(testItem.x, 'Number');
@@ -46,14 +46,14 @@ suite('Unit Tests', () => {
   });
 
   suite('Player class', () => {
-    test('Player class generates a player object', done => {
+    test('Player class generates a player object.', done => {
       const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
 
       assert.isObject(testPlayer);
       done();
     });
 
-    test('Player object contains a score, x and y coordinates, and a unique id', done => {
+    test('Player object contains a score, x and y coordinates, and a unique id.', done => {
       const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
 
       assert.typeOf(testPlayer.x, 'Number');
@@ -63,7 +63,7 @@ suite('Unit Tests', () => {
       done();
     });
 
-    test("movePlayer(str, num) adjusts a player's position", done => {
+    test("movePlayer(str, num) adjusts a player's position.", done => {
       // Note: Only testing movement along the x axis in case
       // the game is a 2D platformer
       const testPlayer = new Player({ x: 100, y: 100, score: 0, id: Date.now() });
@@ -80,7 +80,7 @@ suite('Unit Tests', () => {
       done();
     });
 
-    test("collision(obj) returns true when a player's avatar collides with a collectible item object", done => {
+    test("collision(obj) returns true when a player's avatar collides with a collectible item object.", done => {
       const testPlayer = new Player({ x: 100, y: 100, id: Date.now() });
       const testItem = new Collectible({ x: 100, y: 100, value: 1, id: Date.now() });
 
@@ -88,7 +88,7 @@ suite('Unit Tests', () => {
       done();
     });
 
-    test("calculateRank(arr) returns the player's rank string", done => {
+    test("calculateRank(arr) returns the player's rank string.", done => {
       const testPlayer1 = new Player({ x: 100, y: 100, id: 1 });
       const testPlayer2 = new Player({ x: 150, y: 150, id: 2 });
       testPlayer1.score = 5;
