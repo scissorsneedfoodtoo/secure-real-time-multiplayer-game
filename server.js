@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const expect = require('chai');
 const helmet = require('helmet');
 const cors = require('cors');
+const socket = require('socket.io');
 
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner.js');
@@ -58,7 +59,6 @@ const server = app.listen(portNum, () => {
 // Socket.io setup:
 // Start app and bind 
 // Socket.io to the same port
-const socket = require('socket.io');
 const io = socket(server);
 const Collectible = require('./public/Collectible');
 const { generateStartPos, canvasCalcs } = require('./public/canvas-data');

@@ -21,18 +21,6 @@ const generateStartPos = (min, max, multiple) => {
   return Math.floor(Math.random() * ((max - min) / multiple)) * multiple + min;
 };
 
-// /* 
-//   module.exports for testing / use in Node.
-//   Note: The `try` block is to prevent errors on
-//   the client side
-// */
-// try {
-//   module.exports = {
-//     generateStartPos,
-//     canvasCalcs
-//   }
-// } catch (e) {}
-
 export {
   generateStartPos,
   canvasCalcs
