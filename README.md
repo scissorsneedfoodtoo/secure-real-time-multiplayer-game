@@ -22,7 +22,7 @@ Develop a 2D real time multiplayer game using the HTML Canvas API and [Socket.io
 1. Prevent the client from trying to guess / sniff the MIME type.
 1. Prevent cross-site scripting (XSS) attacks.
 1. Nothing from the website is cached in the client.
-1. The headers say that the site is powered by 'PHP 7.4.3' even though it isn't (as a security measure).
+1. The headers say that the site is powered by "PHP 7.4.3" even though it isn't (as a security measure).
 
 ### Testing and additional notes
 
