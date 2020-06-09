@@ -11,10 +11,7 @@ import Player from '../public/Player.mjs';
 import Collectible from '../public/Collectible.mjs';
 const chai = require('chai');
 const assert = chai.assert;
-const canvas = require('canvas');
 const { JSDOM } = require('jsdom');
-
-global.Image = canvas.Image;
 
 suite('Unit Tests', () => {
   suiteSetup(() => {
